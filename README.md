@@ -17,3 +17,17 @@ assert_eq!(
     Some("12345678".to_string())
 );
 ```
+
+# Different parsing styles
+
+The formatter can be set up, so that it treats fractional numbers using the
+"discount" system (so 0.1 is 割 instead of 分).
+
+Similarly, very large numbers are sometimes understood to be 10<sup>8</sup>
+based instead of 10<sup>4</sup>. This can also be set.
+
+```rust
+let mut formatter = JapaneseNumberFormatter::new();
+formatter.very_large_number_handling(VeryLargeNumberHandling::Alternate);
+formatter.fractional_handling(FractionalHandling::Wari);
+```
