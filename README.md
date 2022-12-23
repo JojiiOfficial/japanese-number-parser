@@ -2,7 +2,7 @@
 
 A minimal rust library for converting Japanese number strings into arabic number
 strings. Handles all sorts of formats and styles, including very big numbers
-(such as 10^60, or 那由他), both style of fractional numbers, and so on.
+(such as 10<sup>60</sup>, or 那由他), both style of fractional numbers, and so on.
 
 The results will be given in string format, this way the library doesn't rely on
 any big number implementations, and therefore isn't as useful, if you need the
