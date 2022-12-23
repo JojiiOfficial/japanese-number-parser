@@ -70,6 +70,7 @@ lazy_static! {
         m.insert("京", 16);
         m.insert("垓", 20);
         m.insert("𥝱", 24);
+        m.insert("秭", 24);
         m.insert("穣", 28);
         m.insert("溝", 32);
         m.insert("澗", 36);
@@ -77,10 +78,11 @@ lazy_static! {
         m.insert("載", 44);
         m.insert("極", 48);
         m.insert("恒河沙", 52);
-        m.insert("阿僧祇", 64);
-        m.insert("那由他", 68);
-        m.insert("不可思議", 72);
-        m.insert("無量大数", 76);
+        m.insert("阿僧祇", 56);
+        m.insert("那由他", 60);
+        m.insert("那由多", 60);
+        m.insert("不可思議", 64);
+        m.insert("無量大数", 68);
         m
     };
     pub static ref ALTERNATE_LARGE_POWERS: HashMap<&'static str, u32> = {
@@ -88,6 +90,7 @@ lazy_static! {
         m.insert("恒河沙", 56);
         m.insert("阿僧祇", 64);
         m.insert("那由他", 72);
+        m.insert("那由多", 72);
         m.insert("不可思議", 80);
         m.insert("無量大数", 88);
         m
