@@ -1,29 +1,18 @@
 use itertools::Itertools;
 
+use crate::number_checker::get_separator_value;
 use crate::{
-    number_checker::{get_separator_value, has_decimal_separator},
-    number_parts::{DECIMAL_POINTS, DIGITS, IN_GROUP_POWERS},
+    number_parts::{DIGITS, IN_GROUP_POWERS},
     VeryLargeNumberHandling,
 };
 
-use super::decimal::parse_decimal_portion;
+use super::decimal::break_up_word;
 
 pub fn parse_spelled_out(
     japanese: &str,
     very_large_number_handling: &VeryLargeNumberHandling,
 ) -> String {
-    let mut whole = japanese;
-    let mut decimal = String::new();
-
-    if has_decimal_separator(japanese) {
-        let parts = whole.split(|c| DECIMAL_POINTS.contains(&c)).collect_vec();
-        if parts.len() != 2 {
-            return String::new();
-        }
-
-        whole = parts[0];
-        decimal = ".".to_string() + &parse_decimal_portion(parts[1]);
-    }
+    let (whole, decimal) = break_up_word(japanese);
 
     let mut result = Vec::new();
 

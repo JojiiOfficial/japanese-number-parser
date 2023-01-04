@@ -1,26 +1,11 @@
 use itertools::Itertools;
 
-use crate::{
-    number_checker::has_decimal_separator,
-    number_parts::{DECIMAL_POINTS, DIGITS, FINANCIAL_SEPARATORS},
-};
+use crate::number_parts::{DIGITS, FINANCIAL_SEPARATORS};
 
-use super::decimal::parse_decimal_portion;
+use super::decimal::break_up_word;
 
 pub fn parse_financial(japanese: &str) -> String {
-    let mut whole = japanese;
-    let mut decimal = String::new();
-    if has_decimal_separator(japanese) {
-        let mut parts = japanese.split(|c| DECIMAL_POINTS.contains(&c));
-
-        let (w, dc) = match (parts.next(), parts.next(), parts.next()) {
-            (Some(whole), Some(dc), None) => (whole, dc),
-            _ => return String::new(),
-        };
-        whole = w;
-
-        decimal = format!(".{}", parse_decimal_portion(dc))
-    }
+    let (whole, decimal) = break_up_word(japanese);
 
     let mut chars = whole.chars().rev().peekable();
     let mut result = Vec::new();

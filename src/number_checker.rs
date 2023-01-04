@@ -1,11 +1,19 @@
 use itertools::Itertools;
 
+mod financial;
+mod fractional;
+mod positional;
+mod spelled_out;
+
 use crate::{
-    number_parts::{
-        ALTERNATE_LARGE_POWERS, DECIMAL_POINTS, DIGITS, FINANCIAL_SEPARATORS, IN_GROUP_POWERS,
-        SEPARATORS, SEPARATOR_POWERS, WARI_FRACTIONALS,
-    },
+    number_parts::{ALTERNATE_LARGE_POWERS, DECIMAL_POINTS, DIGITS, SEPARATORS, SEPARATOR_POWERS},
+    parser::decimal::{has_decimal_separator, is_decimal_part_valid},
     VeryLargeNumberHandling,
+};
+
+use self::{
+    financial::is_valid_financial, fractional::is_valid_fractional,
+    positional::is_valid_japanese_positional, spelled_out::is_valid_spelled_out,
 };
 
 #[derive(Debug, PartialEq)]
@@ -27,6 +35,10 @@ pub fn get_number_type(japanese: &str) -> Option<FormatType> {
         if !is_decimal_part_valid(parts[1]) {
             return None;
         }
+    } else {
+        if is_valid_fractional(japanese) {
+            return Some(FormatType::Fractional);
+        }
     }
 
     if whole.chars().any(|c| SEPARATORS.contains(&c)) {
@@ -46,18 +58,6 @@ pub fn get_number_type(japanese: &str) -> Option<FormatType> {
         return Some(FormatType::Positional);
     }
 
-    // It's fractional, if it's alternating digits with WARI_SEPARATORS
-    if whole.chars().count() % 2 == 0
-        && whole.chars().chunks(2).into_iter().all(|chunk| {
-            let mut chunk = chunk.into_iter();
-            let first = chunk.next().unwrap();
-            let second = chunk.next().unwrap();
-            DIGITS.contains_key(&first) && WARI_FRACTIONALS.contains_key(&second)
-        })
-    {
-        return Some(FormatType::Fractional);
-    }
-
     if is_valid_spelled_out(whole) {
         return Some(FormatType::SpelledOut);
     }
@@ -67,63 +67,6 @@ pub fn get_number_type(japanese: &str) -> Option<FormatType> {
     }
 
     None
-}
-
-pub fn is_valid_financial(japanese: &str) -> bool {
-    let mut chars = japanese.chars().peekable();
-    let mut group_length = 0;
-    let mut last_power = 0;
-    let mut first = true;
-    while let Some(c) = chars.next() {
-        if DIGITS.contains_key(&c) {
-            group_length += 1;
-            if group_length > 3 {
-                return false;
-            }
-            continue;
-        }
-
-        if chars.peek().is_some() {
-            let potential_separator = format!("{}{}", c, chars.peek().unwrap());
-            if let Some(power) = FINANCIAL_SEPARATORS.get(&potential_separator.as_str()) {
-                if last_power > 0 && power > &last_power {
-                    return false;
-                }
-                last_power = *power;
-                group_length = 0;
-                chars.next();
-                continue;
-            }
-        }
-
-        let potential_separator = c.to_string();
-        if let Some(power) = FINANCIAL_SEPARATORS.get(&potential_separator.as_str()) {
-            if !first && group_length != 3 {
-                return false;
-            }
-            first = false;
-            group_length = 0;
-
-            if last_power > 0 && power > &last_power {
-                return false;
-            }
-
-            last_power = *power;
-            continue;
-        }
-
-        return false;
-    }
-
-    true
-}
-
-pub fn has_decimal_separator(japanese: &str) -> bool {
-    japanese.matches(|c| DECIMAL_POINTS.contains(&c)).count() == 1
-}
-
-fn is_decimal_part_valid(decimal: &str) -> bool {
-    decimal.chars().all(|c| DIGITS.contains_key(&c))
 }
 
 fn is_separated_with_commas_properly(japanese: &str) -> bool {
@@ -138,35 +81,6 @@ fn is_separated_with_commas_properly(japanese: &str) -> bool {
         } else {
             count += 1;
         }
-    }
-    true
-}
-
-fn is_valid_japanese_positional(japanese: &str) -> bool {
-    let mut chars = japanese.chars().rev().peekable();
-    let mut group = 0;
-    let mut last_separator = 0;
-    let mut first = true;
-
-    while let Some(c) = chars.peek() {
-        if DIGITS.contains_key(&c) {
-            chars.next();
-            group += 1;
-            continue;
-        }
-        if group != 4 && (!first || group != 0) {
-            return false;
-        }
-        first = false;
-        group = 0;
-        let power = match get_separator_value(&mut chars, &VeryLargeNumberHandling::Regular) {
-            Some(power) => power,
-            None => return false,
-        };
-        if power < last_separator {
-            return false;
-        }
-        last_separator = power;
     }
     true
 }
@@ -194,83 +108,4 @@ pub fn get_separator_value<I: Iterator<Item = char>>(
     }
 
     None
-}
-
-#[derive(Debug, PartialEq)]
-enum SpelledOutState {
-    GroupStart,
-    Digit,
-    GroupSeparator,
-}
-
-fn is_valid_spelled_out(japanese: &str) -> bool {
-    let mut state = SpelledOutState::GroupStart;
-    let mut last_power = 0;
-    let mut last_group_power = 0;
-    let mut chars = japanese.chars().rev().peekable();
-    while let Some(c) = chars.peek() {
-        match state {
-            SpelledOutState::GroupStart => {
-                if DIGITS.contains_key(&c) {
-                    state = SpelledOutState::Digit;
-                } else if let Some(power) = IN_GROUP_POWERS.get(&c) {
-                    if *power < last_group_power {
-                        return false;
-                    }
-                    last_group_power = *power;
-                    state = SpelledOutState::GroupSeparator;
-                } else {
-                    return false;
-                }
-            }
-            SpelledOutState::Digit => {
-                if DIGITS.contains_key(&c) {
-                    return false;
-                }
-
-                if let Some(power) = IN_GROUP_POWERS.get(&c) {
-                    if *power < last_group_power {
-                        return false;
-                    }
-                    last_group_power = *power;
-                    state = SpelledOutState::GroupSeparator;
-                } else {
-                    let power =
-                        match get_separator_value(&mut chars, &VeryLargeNumberHandling::Regular) {
-                            Some(p) => p,
-                            None => return false,
-                        };
-                    if power < last_power {
-                        return false;
-                    }
-                    last_power = power;
-                    state = SpelledOutState::GroupStart;
-                    last_group_power = 0;
-                }
-            }
-            SpelledOutState::GroupSeparator => {
-                if DIGITS.contains_key(&c) {
-                    state = SpelledOutState::Digit;
-                } else if IN_GROUP_POWERS.contains_key(&c) {
-                    state = SpelledOutState::GroupSeparator;
-                } else {
-                    let power =
-                        match get_separator_value(&mut chars, &VeryLargeNumberHandling::Regular) {
-                            Some(p) => p,
-                            None => return false,
-                        };
-                    if power < last_power {
-                        return false;
-                    }
-                    last_power = power;
-                    state = SpelledOutState::GroupStart;
-                    last_group_power = 0;
-                }
-            }
-        }
-
-        chars.next();
-    }
-
-    true
 }
