@@ -47,7 +47,7 @@ pub fn get_number_type(japanese: &str) -> Option<FormatType> {
     }
 
     // It's fractional, if it's alternating digits with WARI_SEPARATORS
-    if whole.len() % 2 == 0
+    if whole.chars().count() % 2 == 0
         && whole.chars().chunks(2).into_iter().all(|chunk| {
             let mut chunk = chunk.into_iter();
             let first = chunk.next().unwrap();
@@ -196,6 +196,7 @@ pub fn get_separator_value<I: Iterator<Item = char>>(
     None
 }
 
+#[derive(Debug, PartialEq)]
 enum SpelledOutState {
     GroupStart,
     Digit,

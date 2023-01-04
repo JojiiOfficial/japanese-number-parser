@@ -78,6 +78,6 @@ mod number_formats {
             formatter.format("１百万３４５千６７８"),
             Some("1345678".to_string()),
             "Financial notation"
-        )
+        );
     }
 }
