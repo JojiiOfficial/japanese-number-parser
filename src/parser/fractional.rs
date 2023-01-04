@@ -26,5 +26,5 @@ pub fn parse_fractional(japanese: &str, handling: &FractionalHandling) -> String
         result.push(digit.to_string());
     }
 
-    "0.".to_owned() + &result.join("")
+    format!("0.{}", result.join(""))
 }

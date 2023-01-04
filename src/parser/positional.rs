@@ -13,28 +13,29 @@ pub fn parse_positional(
     very_large_number_handling: &VeryLargeNumberHandling,
 ) -> String {
     let mut whole = japanese;
-    let mut decimal = "".to_string();
+    let mut decimal = String::new();
     if has_decimal_separator(japanese) {
-        let parts = japanese
-            .split(|c| DECIMAL_POINTS.contains(&c))
-            .collect_vec();
-        if parts.len() != 2 {
-            return String::new();
-        }
-        whole = parts[0];
-        decimal = ".".to_string() + &parse_decimal_portion(parts[1]);
+        let mut parts = japanese.split(|c| DECIMAL_POINTS.contains(&c));
+
+        let (w, dc) = match (parts.next(), parts.next(), parts.next()) {
+            (Some(whole), Some(dc), None) => (whole, dc),
+            _ => return String::new(),
+        };
+        whole = w;
+
+        decimal = format!(".{}", parse_decimal_portion(dc))
     }
 
     let mut chars = whole.chars().rev().peekable();
     let mut result = Vec::new();
 
     while let Some(c) = chars.peek() {
-        if DIGITS.contains_key(&c) {
-            let digit = DIGITS.get(&c).unwrap();
+        if let Some(digit) = DIGITS.get(&c) {
             result.push(digit.to_string());
             chars.next();
             continue;
         }
+
         if SEPARATORS.contains(&c) {
             chars.next();
             continue;

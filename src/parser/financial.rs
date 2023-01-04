@@ -9,47 +9,41 @@ use super::decimal::parse_decimal_portion;
 
 pub fn parse_financial(japanese: &str) -> String {
     let mut whole = japanese;
-    let mut decimal = "".to_string();
+    let mut decimal = String::new();
     if has_decimal_separator(japanese) {
-        let parts = japanese
-            .split(|c| DECIMAL_POINTS.contains(&c))
-            .collect_vec();
-        if parts.len() != 2 {
-            return String::new();
-        }
-        whole = parts[0];
-        decimal = ".".to_string() + &parse_decimal_portion(parts[1]);
+        let mut parts = japanese.split(|c| DECIMAL_POINTS.contains(&c));
+
+        let (w, dc) = match (parts.next(), parts.next(), parts.next()) {
+            (Some(whole), Some(dc), None) => (whole, dc),
+            _ => return String::new(),
+        };
+        whole = w;
+
+        decimal = format!(".{}", parse_decimal_portion(dc))
     }
 
     let mut chars = whole.chars().rev().peekable();
     let mut result = Vec::new();
 
     while let Some(c) = chars.next() {
-        if DIGITS.contains_key(&c) {
-            let digit = DIGITS.get(&c).unwrap();
+        if let Some(digit) = DIGITS.get(&c) {
             result.push(digit.to_string());
             continue;
         }
 
-        let next_char = chars.peek();
-        if next_char.is_some() {
-            let potential_separator = format!("{}{}", next_char.unwrap(), c);
-            if FINANCIAL_SEPARATORS.contains_key(&potential_separator.as_str()) {
-                let power = FINANCIAL_SEPARATORS
-                    .get(&potential_separator.as_str())
-                    .unwrap();
+        if let Some(next_char) = chars.peek() {
+            let potential_separator = format!("{}{}", next_char, c);
+            if let Some(power) = FINANCIAL_SEPARATORS.get(&potential_separator.as_str()) {
                 result.resize(*power as usize, "0".to_string());
                 chars.next();
                 continue;
             }
         }
-        let potential_separator = format!("{}", c);
-        if FINANCIAL_SEPARATORS.contains_key(&potential_separator.as_str()) {
-            let power = FINANCIAL_SEPARATORS
-                .get(&potential_separator.as_str())
-                .unwrap();
+
+        let potential_separator = c.to_string();
+        if let Some(power) = FINANCIAL_SEPARATORS.get(&potential_separator.as_str()) {
             result.resize(*power as usize, "0".to_string());
-            continue;
+            //continue;
         }
     }
 

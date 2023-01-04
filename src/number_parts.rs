@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 lazy_static! {
     pub static ref DIGITS: HashMap<char, char> = {
-        let mut m = HashMap::new();
+        let mut m = HashMap::with_capacity(44);
         m.insert('〇', '0');
         m.insert('零', '0');
         m.insert('0', '0');
@@ -51,7 +51,7 @@ lazy_static! {
         m
     };
     pub static ref IN_GROUP_POWERS: HashMap<char, u32> = {
-        let mut m = HashMap::new();
+        let mut m = HashMap::with_capacity(7);
         m.insert('十', 1);
         m.insert('拾', 1);
         m.insert('百', 2);
@@ -62,7 +62,7 @@ lazy_static! {
         m
     };
     pub static ref SEPARATOR_POWERS: HashMap<&'static str, u32> = {
-        let mut m = HashMap::new();
+        let mut m = HashMap::with_capacity(20);
         m.insert("万", 4);
         m.insert("萬", 4);
         m.insert("億", 8);
@@ -86,7 +86,7 @@ lazy_static! {
         m
     };
     pub static ref ALTERNATE_LARGE_POWERS: HashMap<&'static str, u32> = {
-        let mut m = HashMap::new();
+        let mut m = HashMap::with_capacity(5);
         m.insert("恒河沙", 56);
         m.insert("阿僧祇", 64);
         m.insert("那由他", 72);
@@ -96,7 +96,7 @@ lazy_static! {
         m
     };
     pub static ref FINANCIAL_SEPARATORS: HashMap<&'static str, u32> = {
-        let mut m = HashMap::new();
+        let mut m = HashMap::with_capacity(12);
         m.insert("千", 3);
         m.insert("仟", 3);
         m.insert("阡", 3);
@@ -112,7 +112,7 @@ lazy_static! {
         m
     };
     pub static ref BU_FRACTIONALS: HashMap<char, u32> = {
-        let mut m = HashMap::new();
+        let mut m = HashMap::with_capacity(10);
         m.insert('分', 1);
         m.insert('厘', 2);
         m.insert('毛', 3);
@@ -126,7 +126,7 @@ lazy_static! {
         m
     };
     pub static ref WARI_FRACTIONALS: HashMap<char, u32> = {
-        let mut m = HashMap::new();
+        let mut m = HashMap::with_capacity(11);
         m.insert('割', 1);
         m.insert('分', 2);
         m.insert('厘', 3);

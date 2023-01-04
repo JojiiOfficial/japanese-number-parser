@@ -13,12 +13,14 @@ pub fn parse_spelled_out(
     very_large_number_handling: &VeryLargeNumberHandling,
 ) -> String {
     let mut whole = japanese;
-    let mut decimal = "".to_string();
+    let mut decimal = String::new();
+
     if has_decimal_separator(japanese) {
         let parts = whole.split(|c| DECIMAL_POINTS.contains(&c)).collect_vec();
         if parts.len() != 2 {
             return String::new();
         }
+
         whole = parts[0];
         decimal = ".".to_string() + &parse_decimal_portion(parts[1]);
     }
@@ -29,17 +31,15 @@ pub fn parse_spelled_out(
     let mut current_group_length = 0;
     let mut previous_digit = true;
     while let Some(c) = chars.peek() {
-        if DIGITS.contains_key(&c) {
-            let digit = DIGITS.get(&c).unwrap();
+        if let Some(digit) = DIGITS.get(&c) {
             result.push(digit.to_string());
             current_group_length += 1;
             chars.next();
             previous_digit = true;
             continue;
         }
-        if IN_GROUP_POWERS.contains_key(&c) {
-            let power = IN_GROUP_POWERS.get(&c).unwrap();
 
+        if let Some(power) = IN_GROUP_POWERS.get(&c) {
             if !previous_digit {
                 result.push("1".to_string());
                 current_group_length += 1;
