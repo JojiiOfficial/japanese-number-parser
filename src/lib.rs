@@ -25,6 +25,7 @@ pub struct JapaneseNumberFormatter {
 }
 
 impl JapaneseNumberFormatter {
+    #[inline]
     pub fn new() -> Self {
         JapaneseNumberFormatter {
             very_large_number_handling: VeryLargeNumberHandling::Regular,
@@ -45,21 +46,20 @@ impl JapaneseNumberFormatter {
     pub fn format(&self, japanese: &str) -> Option<String> {
         let number_type = get_number_type(japanese);
 
-        match number_type {
+        let res = match number_type {
             Some(number_type) => match number_type {
                 FormatType::Positional => {
-                    Some(parse_positional(japanese, &self.very_large_number_handling))
+                    parse_positional(japanese, &self.very_large_number_handling)
                 }
-                FormatType::SpelledOut => Some(parse_spelled_out(
-                    japanese,
-                    &self.very_large_number_handling,
-                )),
-                FormatType::Fractional => {
-                    Some(parse_fractional(japanese, &self.fractional_handling))
+                FormatType::SpelledOut => {
+                    parse_spelled_out(japanese, &self.very_large_number_handling)
                 }
-                FormatType::Financial => Some(parse_financial(japanese)),
+                FormatType::Fractional => parse_fractional(japanese, &self.fractional_handling),
+                FormatType::Financial => parse_financial(japanese),
             },
-            None => None,
-        }
+            None => return None,
+        };
+
+        Some(res)
     }
 }
