@@ -52,7 +52,7 @@ pub fn get_number_type(japanese: &str) -> Option<FormatType> {
     }
 
     // It's fractional, if it's alternating digits with WARI_SEPARATORS
-    if whole.len() % 2 == 0
+    if whole.chars().count() % 2 == 0
         && whole.chars().chunks(2).into_iter().all(|chunk| {
             let mut chunk = chunk.into_iter();
             let first = chunk.next().unwrap();
@@ -206,6 +206,7 @@ pub fn get_separator_value(
     None
 }
 
+#[derive(Debug, PartialEq)]
 enum SpelledOutState {
     GroupStart,
     Digit,
@@ -217,6 +218,7 @@ fn is_valid_spelled_out(japanese: &str) -> bool {
     let mut last_power = 0;
     let mut last_group_power = 0;
     let mut chars = japanese.chars().rev().peekable();
+    println!("Checking {:?}", chars);
     while let Some(c) = chars.peek() {
         match state {
             SpelledOutState::GroupStart => {
