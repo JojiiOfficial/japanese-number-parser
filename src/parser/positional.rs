@@ -3,11 +3,15 @@ use itertools::Itertools;
 use crate::{
     number_checker::{get_separator_value, has_decimal_separator},
     number_parts::{DECIMAL_POINTS, DIGITS, SEPARATORS},
+    VeryLargeNumberHandling,
 };
 
 use super::decimal::parse_decimal_portion;
 
-pub fn parse_positional(japanese: &str) -> String {
+pub fn parse_positional(
+    japanese: &str,
+    very_large_number_handling: &VeryLargeNumberHandling,
+) -> String {
     let mut whole = japanese;
     let mut decimal = "".to_string();
     if has_decimal_separator(japanese) {
@@ -36,7 +40,7 @@ pub fn parse_positional(japanese: &str) -> String {
             continue;
         }
 
-        let power = get_separator_value(&mut chars).unwrap();
+        let power = get_separator_value(&mut chars, very_large_number_handling).unwrap();
         result.resize(power as usize, "0".to_string());
     }
 

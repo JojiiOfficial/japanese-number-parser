@@ -1,12 +1,14 @@
 use number_checker::{get_number_type, FormatType};
 use parser::{
-    fractional::parse_fractional, positional::parse_positional, spelled_out::parse_spelled_out,
+    financial::parse_financial, fractional::parse_fractional, positional::parse_positional,
+    spelled_out::parse_spelled_out,
 };
 
 mod number_checker;
 mod number_parts;
 mod parser;
 
+#[derive(Debug, PartialEq)]
 pub enum VeryLargeNumberHandling {
     Regular,
     Alternate,
@@ -45,11 +47,17 @@ impl JapaneseNumberFormatter {
 
         match number_type {
             Some(number_type) => match number_type {
-                FormatType::Positional => Some(parse_positional(japanese)),
-                FormatType::SpelledOut => Some(parse_spelled_out(japanese)),
+                FormatType::Positional => {
+                    Some(parse_positional(japanese, &self.very_large_number_handling))
+                }
+                FormatType::SpelledOut => Some(parse_spelled_out(
+                    japanese,
+                    &self.very_large_number_handling,
+                )),
                 FormatType::Fractional => {
                     Some(parse_fractional(japanese, &self.fractional_handling))
                 }
+                FormatType::Financial => Some(parse_financial(japanese)),
             },
             None => None,
         }

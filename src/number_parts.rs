@@ -95,6 +95,22 @@ lazy_static! {
         m.insert("無量大数", 88);
         m
     };
+    pub static ref FINANCIAL_SEPARATORS: HashMap<&'static str, u32> = {
+        let mut m = HashMap::new();
+        m.insert("千", 3);
+        m.insert("仟", 3);
+        m.insert("阡", 3);
+        m.insert("百万", 6);
+        m.insert("佰万", 6);
+        m.insert("百萬", 6);
+        m.insert("佰萬", 6);
+        m.insert("十億", 9);
+        m.insert("拾億", 9);
+        m.insert("兆", 12);
+        m.insert("千兆", 15);
+        m.insert("仟兆", 15);
+        m
+    };
     pub static ref BU_FRACTIONALS: HashMap<char, u32> = {
         let mut m = HashMap::new();
         m.insert('分', 1);

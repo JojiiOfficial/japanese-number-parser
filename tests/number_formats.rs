@@ -52,6 +52,11 @@ mod number_formats {
             Some("12345678".to_string()),
             "Spelled out"
         );
+        assert_eq!(
+            formatter.format("1千8百十"),
+            Some("1810".to_string()),
+            "Mixed style"
+        )
     }
 
     #[test]
@@ -63,5 +68,16 @@ mod number_formats {
             Some("123456789".to_string()),
             "Spelled out with anti-forgery"
         );
+    }
+
+    #[test]
+    fn test_financial() {
+        let formatter = JapaneseNumberFormatter::new();
+
+        assert_eq!(
+            formatter.format("１百万３４５千６７８"),
+            Some("1345678".to_string()),
+            "Financial notation"
+        )
     }
 }

@@ -10,6 +10,14 @@ mod large_numbers {
         assert_power_of_ten(&formatter, 52, "一恒河沙");
     }
 
+    #[test]
+    fn test_large_numbers_alternate() {
+        let mut formatter = JapaneseNumberFormatter::new();
+        formatter.very_large_number_handling(VeryLargeNumberHandling::Alternate);
+
+        assert_power_of_ten(&formatter, 64, "一阿僧祇");
+    }
+
     fn assert_power_of_ten(formatter: &JapaneseNumberFormatter, power: i32, str: &str) {
         let number_option = formatter.format(str);
         assert!(number_option.is_some());
@@ -18,13 +26,5 @@ mod large_numbers {
         assert!(number_iter.next() == Some('1'));
         assert!(number_iter.all(|c| c == '0'));
         assert!(number.len() == (power + 1) as usize);
-    }
-
-    #[test]
-    fn test_large_numbers_alternate() {
-        let mut formatter = JapaneseNumberFormatter::new();
-        formatter.very_large_number_handling(VeryLargeNumberHandling::Alternate);
-
-        assert_power_of_ten(&formatter, 64, "一阿僧祇");
     }
 }
