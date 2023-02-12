@@ -27,4 +27,11 @@ mod large_numbers {
         assert!(number_iter.all(|c| c == '0'));
         assert!(number.len() == (power + 1) as usize);
     }
+
+    #[test]
+    fn counterless_power() {
+        let formatter = JapaneseNumberFormatter::new();
+        let number_option = formatter.format("億");
+        assert!(number_option.is_none());
+    }
 }

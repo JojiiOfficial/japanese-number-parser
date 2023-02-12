@@ -6,7 +6,6 @@ pub fn is_valid_japanese_positional(japanese: &str) -> bool {
     let mut chars = japanese.chars().rev().peekable();
     let mut group = 0;
     let mut last_separator = 0;
-    let mut first = true;
 
     while let Some(c) = chars.peek() {
         if DIGITS.contains_key(&c) {
@@ -14,10 +13,9 @@ pub fn is_valid_japanese_positional(japanese: &str) -> bool {
             group += 1;
             continue;
         }
-        if group != 4 && (!first || group != 0) {
+        if group != 4 && (last_separator != 0 || group != 0) {
             return false;
         }
-        first = false;
         group = 0;
         let power = match get_separator_value(&mut chars, &VeryLargeNumberHandling::Regular) {
             Some(power) => power,
@@ -28,5 +26,5 @@ pub fn is_valid_japanese_positional(japanese: &str) -> bool {
         }
         last_separator = power;
     }
-    true
+    group != 0
 }
