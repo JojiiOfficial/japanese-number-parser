@@ -79,5 +79,11 @@ mod number_formats {
             Some("1345678".to_string()),
             "Financial notation"
         );
+
+        assert_eq!(
+            formatter.format("百万"),
+            Some("1000000".to_string()),
+            "Financial notation with no counter"
+        );
     }
 }

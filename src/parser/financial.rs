@@ -9,12 +9,15 @@ pub fn parse_financial(japanese: &str) -> String {
 
     let mut chars = whole.chars().rev().peekable();
     let mut result = Vec::new();
+    let mut last_was_digit = false;
 
     while let Some(c) = chars.next() {
         if let Some(digit) = DIGITS.get(&c) {
             result.push(digit.to_string());
+            last_was_digit = true;
             continue;
         }
+        last_was_digit = false;
 
         if let Some(next_char) = chars.peek() {
             let potential_separator = format!("{}{}", next_char, c);
@@ -30,6 +33,10 @@ pub fn parse_financial(japanese: &str) -> String {
             result.resize(*power as usize, "0".to_string());
             //continue;
         }
+    }
+
+    if !last_was_digit {
+        result.push("1".to_string());
     }
 
     result.iter().rev().join("") + decimal.as_str()
