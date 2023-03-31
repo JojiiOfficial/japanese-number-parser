@@ -34,4 +34,11 @@ mod large_numbers {
         let number_option = formatter.format("億");
         assert!(number_option.is_none());
     }
+
+    #[test]
+    fn zero_as_multiplier() {
+        let formatter = JapaneseNumberFormatter::new();
+        let number_option = formatter.format("000億");
+        assert!(number_option.is_none());
+    }
 }

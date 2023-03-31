@@ -9,6 +9,9 @@ pub fn is_valid_japanese_positional(japanese: &str) -> bool {
 
     while let Some(c) = chars.peek() {
         if DIGITS.contains_key(&c) {
+            if group == 0 && DIGITS[c] == '0' {
+                return false;
+            }
             chars.next();
             group += 1;
             continue;

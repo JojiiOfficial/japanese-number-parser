@@ -45,7 +45,6 @@ impl JapaneseNumberFormatter {
 
     pub fn format(&self, japanese: &str) -> Option<String> {
         let number_type = get_number_type(japanese);
-        println!("{:?}", number_type);
 
         let res = match number_type {
             Some(number_type) => match number_type {
