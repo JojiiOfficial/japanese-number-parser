@@ -24,5 +24,8 @@ pub fn has_decimal_separator(japanese: &str) -> bool {
 }
 
 pub fn is_decimal_part_valid(decimal: &str) -> bool {
+    if decimal.is_empty() {
+        return false;
+    }
     decimal.chars().all(|c| DIGITS.contains_key(&c))
 }

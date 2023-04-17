@@ -33,4 +33,20 @@ mod rationals {
             Some("123.012".to_string())
         );
     }
+
+    #[test]
+    fn decimal_point_without_rational() {
+        let formatter = JapaneseNumberFormatter::new();
+
+        assert_eq!(formatter.format("123点"), None);
+        assert_eq!(formatter.format("123・"), None);
+    }
+
+    #[test]
+    fn decimal_point_without_integer() {
+        let formatter = JapaneseNumberFormatter::new();
+
+        assert_eq!(formatter.format("点123"), None);
+        assert_eq!(formatter.format("・123"), None);
+    }
 }

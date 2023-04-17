@@ -32,6 +32,9 @@ pub fn get_number_type(japanese: &str) -> Option<FormatType> {
             return None;
         }
         whole = parts[0];
+        if whole.is_empty() {
+            return None;
+        }
         if !is_decimal_part_valid(parts[1]) {
             return None;
         }
