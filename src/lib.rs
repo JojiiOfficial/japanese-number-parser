@@ -22,6 +22,7 @@ pub enum FractionalHandling {
 pub struct JapaneseNumberFormatter {
     very_large_number_handling: VeryLargeNumberHandling,
     fractional_handling: FractionalHandling,
+    arabic_only_valid: bool,
 }
 
 impl JapaneseNumberFormatter {
@@ -30,6 +31,7 @@ impl JapaneseNumberFormatter {
         JapaneseNumberFormatter {
             very_large_number_handling: VeryLargeNumberHandling::Regular,
             fractional_handling: FractionalHandling::Bu,
+            arabic_only_valid: true,
         }
     }
 
@@ -43,8 +45,13 @@ impl JapaneseNumberFormatter {
         self
     }
 
+    pub fn arabic_only_valid(&mut self, arabic_only_valid: bool) -> &mut Self {
+        self.arabic_only_valid = arabic_only_valid;
+        self
+    }
+
     pub fn format(&self, japanese: &str) -> Option<String> {
-        let number_type = get_number_type(japanese);
+        let number_type = get_number_type(japanese, self.arabic_only_valid);
 
         let res = match number_type {
             Some(number_type) => match number_type {

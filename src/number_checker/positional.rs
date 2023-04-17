@@ -29,5 +29,6 @@ pub fn is_valid_japanese_positional(japanese: &str) -> bool {
         }
         last_separator = power;
     }
+
     group != 0
 }

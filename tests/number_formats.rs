@@ -86,4 +86,12 @@ mod number_formats {
             "Financial notation with no counter"
         );
     }
+
+    #[test]
+    fn test_discard_arabic_only() {
+        let mut formatter = JapaneseNumberFormatter::new();
+        formatter.arabic_only_valid(false);
+
+        assert_eq!(formatter.format("123456789"), None, "Roman numerals");
+    }
 }

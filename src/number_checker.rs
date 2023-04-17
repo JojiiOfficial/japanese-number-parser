@@ -6,7 +6,9 @@ mod positional;
 mod spelled_out;
 
 use crate::{
-    number_parts::{ALTERNATE_LARGE_POWERS, DECIMAL_POINTS, DIGITS, SEPARATORS, SEPARATOR_POWERS},
+    number_parts::{
+        ALTERNATE_LARGE_POWERS, ARABIC_DIGITS, DECIMAL_POINTS, DIGITS, SEPARATORS, SEPARATOR_POWERS,
+    },
     parser::decimal::{has_decimal_separator, is_decimal_part_valid},
     VeryLargeNumberHandling,
 };
@@ -24,7 +26,7 @@ pub enum FormatType {
     Financial,
 }
 
-pub fn get_number_type(japanese: &str) -> Option<FormatType> {
+pub fn get_number_type(japanese: &str, arabic_only_valid: bool) -> Option<FormatType> {
     let mut whole = japanese;
     if has_decimal_separator(japanese) {
         let parts = japanese.split(DECIMAL_POINTS).collect_vec();
@@ -54,6 +56,14 @@ pub fn get_number_type(japanese: &str) -> Option<FormatType> {
         .chars()
         .all(|c| DIGITS.contains_key(&c) || SEPARATORS.contains(&c))
     {
+        if !arabic_only_valid
+            && whole
+                .chars()
+                .all(|c| !DIGITS.contains_key(&c) || ARABIC_DIGITS.contains(&c))
+        {
+            return None;
+        }
+
         return Some(FormatType::Positional);
     }
 

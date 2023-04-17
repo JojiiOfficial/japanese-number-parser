@@ -31,3 +31,12 @@ let mut formatter = JapaneseNumberFormatter::new();
 formatter.very_large_number_handling(VeryLargeNumberHandling::Alternate);
 formatter.fractional_handling(FractionalHandling::Wari);
 ```
+
+If the parser encounters a completely arabic number (e.g. 1234567), it will
+still output the "parsed" result. This behavious can be changed using the
+`arabic_only_valid(bool)` method on the formatter:
+
+```rust
+let mut formatter = JapaneseNumberFormatter::new();
+formatter.arabic_only_valid(false);
+```

@@ -1,5 +1,5 @@
 use lazy_static::lazy_static;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 lazy_static! {
     pub static ref DIGITS: HashMap<char, char> = {
@@ -49,6 +49,20 @@ lazy_static! {
         m.insert('9', '9');
         m.insert('９', '9');
         m
+    };
+    pub static ref ARABIC_DIGITS: HashSet<char> = {
+        let mut s = HashSet::with_capacity(10);
+        s.insert('0');
+        s.insert('1');
+        s.insert('2');
+        s.insert('3');
+        s.insert('4');
+        s.insert('5');
+        s.insert('6');
+        s.insert('7');
+        s.insert('8');
+        s.insert('9');
+        s
     };
     pub static ref IN_GROUP_POWERS: HashMap<char, u32> = {
         let mut m = HashMap::with_capacity(7);
