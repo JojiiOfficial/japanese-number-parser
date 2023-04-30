@@ -51,7 +51,8 @@ impl JapaneseNumberFormatter {
     }
 
     pub fn format(&self, japanese: &str) -> Option<String> {
-        let number_type = get_number_type(japanese, self.arabic_only_valid);
+        let number_type =
+            get_number_type(japanese, self.arabic_only_valid, &self.fractional_handling);
 
         let res = match number_type {
             Some(number_type) => match number_type {

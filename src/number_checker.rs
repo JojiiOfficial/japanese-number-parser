@@ -10,7 +10,7 @@ use crate::{
         ALTERNATE_LARGE_POWERS, ARABIC_DIGITS, DECIMAL_POINTS, DIGITS, SEPARATORS, SEPARATOR_POWERS,
     },
     parser::decimal::{has_decimal_separator, is_decimal_part_valid},
-    VeryLargeNumberHandling,
+    FractionalHandling, VeryLargeNumberHandling,
 };
 
 use self::{
@@ -26,7 +26,11 @@ pub enum FormatType {
     Financial,
 }
 
-pub fn get_number_type(japanese: &str, arabic_only_valid: bool) -> Option<FormatType> {
+pub fn get_number_type(
+    japanese: &str,
+    arabic_only_valid: bool,
+    fractional_handling: &FractionalHandling,
+) -> Option<FormatType> {
     let mut whole = japanese;
     if has_decimal_separator(japanese) {
         let parts = japanese.split(DECIMAL_POINTS).collect_vec();
@@ -41,7 +45,7 @@ pub fn get_number_type(japanese: &str, arabic_only_valid: bool) -> Option<Format
             return None;
         }
     } else {
-        if is_valid_fractional(japanese) {
+        if is_valid_fractional(japanese, fractional_handling) {
             return Some(FormatType::Fractional);
         }
     }
