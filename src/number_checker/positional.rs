@@ -1,4 +1,4 @@
-use crate::{number_parts::DIGITS, VeryLargeNumberHandling};
+use crate::{number_parts::{DIGITS, ZERO_DIGITS}, VeryLargeNumberHandling};
 
 use super::get_separator_value;
 
@@ -7,16 +7,19 @@ pub fn is_valid_japanese_positional(japanese: &str) -> bool {
     let mut group = 0;
     let mut last_separator = 0;
 
+    let mut last_digit_zero = false;
+
     while let Some(c) = chars.peek() {
         if DIGITS.contains_key(&c) {
-            if group == 0 && DIGITS[c] == '0' {
-                return false;
-            }
+            last_digit_zero = ZERO_DIGITS.contains(c);
             chars.next();
             group += 1;
             continue;
         }
         if group != 4 && (last_separator != 0 || group != 0) {
+            return false;
+        }
+        if last_digit_zero {
             return false;
         }
         group = 0;
@@ -30,5 +33,5 @@ pub fn is_valid_japanese_positional(japanese: &str) -> bool {
         last_separator = power;
     }
 
-    group != 0
+    group != 0 && !last_digit_zero
 }

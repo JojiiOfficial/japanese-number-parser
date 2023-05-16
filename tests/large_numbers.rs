@@ -41,4 +41,11 @@ mod large_numbers {
         let number_option = formatter.format("000億");
         assert!(number_option.is_none());
     }
+
+    #[test]
+    fn ten_billion() {
+        let formatter = JapaneseNumberFormatter::new();
+        let result = formatter.format("100億").unwrap();
+        assert!(result == "10000000000".to_owned());
+    }
 }

@@ -50,6 +50,13 @@ lazy_static! {
         m.insert('９', '9');
         m
     };
+    pub static ref ZERO_DIGITS: HashSet<char> = {
+        let mut s = HashSet::with_capacity(3);
+        s.insert('〇');
+        s.insert('0');
+        s.insert('０');
+        s
+    };
     pub static ref ARABIC_DIGITS: HashSet<char> = {
         let mut s = HashSet::with_capacity(10);
         s.insert('0');
